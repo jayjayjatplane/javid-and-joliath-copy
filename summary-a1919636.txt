@@ -1,0 +1,49 @@
+PSSD Group Assignment — Big 2 Greedy Hand Analyser & Play Suggestion Tool
+Student: Jay
+
+1) What I worked on 
+Owned 
+- Core game model and data structures: created frameworks for cards and players to follow the Big 2 ranking rules, such as suit order, rank mapping 3...10, J, Q, K, A, and 2. Sort helpers and comparison logic were put into place to accommodate all evaluators. Files: include/Card.h, src/Card.cpp, include/Player.h (class shape, accessors) 
+- Five dynamic programming strategies: 
+   - dpCoverFive: add any leftover cards after selecting separated five card sets to cover the greatest number of cards 
+   - dpReduceSingle: minimise singletons by prioritising sets.
+   - dpMaxPairs: maximise the number of separated pairs.
+   - dpKeepQuads: when available, keep separated four of a kind.
+   - dpStraightsOnly: whenever possible, pack the hand into separated straights.
+Using the dfsCoverSimple, pickMaxCoverSimple, and flattenWithLeftover helpers, each DP makes use of Player.cpp's simple state scheme and reconstruction.
+- Combination counters: implement countPairs, countTriples, countFlushes, countStraights for a quick hand statistics and validation
+
+Co-developed
+- Combination finders: contributed to findPairs, findTriples, findFourOfAKinds, findStraights, findFlushes, findFullHouses by defining invariants, test cases and corner rules, especially duplicate ranks and 2 not in straights. 
+
+Reviews and tests 
+- Developed sanity tests for DP outputs, ordering and hand parsing. I also confirmed that the selected combos do not overlap and that the reconstruction adds unused cards in a consistent sequence. Josh and I worked together on random deal smoke tests and CLI tests.
+
+2) Process I followed 
+- Requirements to design: designed for the tool as decision support rather than full gameplay. I wrote the ranking and game rules before creating class interfaces. 
+- Greedy vs DP plan: I agreed that the project should compare a greedy selector to packing strategies. I drafted DP state representation using boolean used_flag per card, then inserted into the memory table by key_string, to avoid bit masks and maintain clarity.
+- iteration:  to guarantee a consistent output layout, each DP was constructed separately before being combined using pickMaxCoverSimple and a single flattening path.
+- Validation: began with hand patterns that practise long runs, duplicate suits and ties, then measured coverage gain per strategy and checked that greedy and DP orders are deterministic.
+
+3) What I learned 
+- Algorithm design trade-offs: we were able to quickly get the correct behaviour by using a straightforward boolean mask with string keys, which is slower than a bitset but much easier to audit. It is a good example of prioritising clarity over micro-optimisation.
+- Problem decomposition: the DP layer became reusable and testable after separating combo detection from combo selection.
+- Domain specifics matter: excluding 2 from straights and handling suit tiebreaks changes both counting and packing logic. 
+
+4) Reflection
+What worked well 
+- Clear separation of concerns: model, finders, selectors. The DP helpers made it simple to add new packing goals and cut down on repetitive code. 
+- Deterministic outputs: both testing and demo had predictable orders because of sorting and stable reconstruction.
+
+What could be improved
+- Performance: the current DP memo key uses strings over booleans. Replacing with a compact bitset or integer mask would speed up deeper searches.
+- Completeness of evaluators: straights are identified as maximal runs. Some hands would have better coverage if all unique length-5 straights within runs were counted. 
+
+5) Future work 
+- To enable ranked selection among equal-size covers, include a unified five card strength comparator and straight flush detection.
+- Benchmark greedy vs each DP across many random hands and report coverage metrics, remaining singles and run time.
+- Make a basic JSON interface available so that external evaluators can contact the selectors.
+
+ennabelle, [4/11/25 12:04 PM]
+6) Collaboration notes 
+- Jay owned the DP suite and game model. Josh was the greedy selector and owner of CLI. To ensure that outputs are consistent across strategies, we co-designed the combination finders and tests and reviewed each other's modules in pairs.

@@ -1,0 +1,34 @@
+Student: Josh
+
+1) What I worked on
+- Program runner and CLI: constructed the main program that generates, deals, and shuffles a 52-card deck, prints hands, and performs analysis and suggests games. Files: src/main.cpp and src/deal/shuffle helpers. 
+- Greedy play selector: implemented Player::greedyPlay and printGreedyPlay with a simple set of rules. Four of a kind, full houses, flushes, straights, triples, pairs, and singles are the non-overlapping combos that the selector consumes in this priority order. It generates a single greedy play order and keeps track of used cards to prevent overlap. 
+- Combination summaries and printing: implemented summary collection and printSummary to show all found singles, pairs, triples, straights, flushes, full houses and four of a kinds for a hand.
+
+Reviews and tests 
+- Built randomised smoke tests: shuffled deals, created summary, greedyPlay, and each DP, and confirmed that outputs only included the hand's cards, without any duplicates or missed cards following reconstruction.
+- Edge cases: checked hands with many duplicates, no five card sets, all one suit, and multiple equal-rank options to guarantee that the greedy priority acts consistently 
+
+2) Process I followed 
+- User path first: specified the command flow that users adhere to. Options include choosing a play type, running a full analysis, or entering a hand or accepting a randomly selected deal. The printing and summary structure were determined by this. 
+- Greedy design: maintain the policy's resemblance to how a human decision might be made quickly by establishing a clear, documented priority ladder for combo types. Separate selection was enforced by implementing a basic usedCards ledger.
+- Collaboration loop: synced my greedy outputs with Jay’s DP orders by agreeing on sort order and printing format. Used short cycles of implement, print, compare, adjust. 
+
+3) What I learned 
+- Greedy clarity vs optimality: a transparent priority list can leave the hand with more singles than is necessary, but it is also quick to run and easy to explain. This trade-off became obvious when DP was viewed side by side. 
+- Testability though visibility: printing compact summaries of found combos made bugs obvious, especially duplicate-rank handling and straight detection boundaries. 
+- API design matters: maintaining consistency in Player's methods made the CLI and subsequent additions easier. 
+
+4) Reflection
+What worked well 
+- Fast feedback loop: we can quickly observe effects on actual hands while iterating on rules thanks to the CLI plus summaries. 
+- Greedy policy readability: the selection order is easy to understand, which helps in user explanation of outputs. 
+
+What could be improved 
+- Strength ranking inside same combo type: for example, we currently maintain complete runs within flushes and straights. When there are multiple options, greedy people could select the strictly strongest ones if a proper five-card hand ranker was added.
+- Input ergonomics: manual testing would be sped up with a parser for short strings like "3C 3D 3H 5S..." 
+
+5) Future work 
+- Expand greedy to directly support user-selected play types, complete with strongest-play output and validation for each type.
+- Include a benchmark harness that records time, pair count, and remaining singles while comparing greedy against each DP on thousands of random hands.
+- To list every unique five-card straight in longer runs, improve straight listing.
